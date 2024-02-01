@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
-using System.Reflection.Metadata;
+using System.ComponentModel.DataAnnotations;
 
 namespace UserAdminApi.DbModel;
+
 public class UserAdminDbContext : DbContext
 {
-    public UserAdminDbContext(DbContextOptions<UserAdminDbContext> options) : base(options)
-    {
-    }
+    public UserAdminDbContext(DbContextOptions<UserAdminDbContext> options)
+        : base(options) { }
 
     public DbSet<User> Users { get; set; }
 }
@@ -15,7 +14,12 @@ public class UserAdminDbContext : DbContext
 public class User
 {
     public Guid Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
+
+    [MaxLength(200)]
+    public required string Name { get; set; }
+
+    [MaxLength(200)]
+    public required string Email { get; set; }
+
     public Int64 Credits { get; set; }
 }
