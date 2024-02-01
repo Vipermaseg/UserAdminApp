@@ -37,7 +37,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 
-app.MapGet("/users", () =>
+/*app.MapGet("/users", () =>
 {
     return Enumerable.Range(1, 5).Select(index =>
         new UserDto
@@ -67,6 +67,8 @@ app.MapPost("/users", async (UserCreateParams userParams, IUserAdminService serv
 .AddEndpointFilter<ValidationFilter<UserCreateParams>>()
 .WithName("AddUser")
 .WithSummary("Create user")
-.WithOpenApi();
+.WithOpenApi();*/
+
+app.MapUserAdminEndpoints();
 
 app.Run();

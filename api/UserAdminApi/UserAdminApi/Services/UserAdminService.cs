@@ -7,9 +7,10 @@ public record UserDto(Guid Id, string Name, string Email, Int64 Credits);
 public record UserCreateParams(string Name, string Email, Int64 Credits);
 public interface IUserAdminService
 {
-    Task<User> CreateUserAsync(User user);
+    Task<User> CreateUserAsync(UserCreateParams user);
     Task<User[]> GetAllUsersAsync();
     Task<User> UpdateUserAsync(UserDto user);
+    Task DeleteUserAsync(Guid id);
 }
 public class UserAdminService : IUserAdminService
 {
@@ -20,9 +21,25 @@ public class UserAdminService : IUserAdminService
         _dbContext = dbContext;
     }
 
-    public async Task<User> CreateUserAsync(User user)
+    public async Task DeleteUserAsync(Guid id)
     {
-        var newUser = _dbContext.Users.Add(user);
+        var user = await _dbContext.Users.FindAsync(id);
+        if (user == null)
+        {
+            throw new ArgumentException($"User with id {id} not found");
+        }
+        _dbContext.Users.Remove(user);
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<User> CreateUserAsync(UserCreateParams user)
+    {
+        var newUser = _dbContext.Users.Add(new User()
+        { 
+            Credits = user.Credits,
+            Email = user.Email,
+            Name = user.Name
+        });
         await _dbContext.SaveChangesAsync();
         return newUser.Entity;
     }
