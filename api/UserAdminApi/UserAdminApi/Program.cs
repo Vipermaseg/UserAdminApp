@@ -5,7 +5,6 @@ using UserAdminApi.Services;
 using UserAdminApi.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
-
 //Add configuration
 var databaseConfig = builder.Configuration.GetSection("Database");
 
@@ -14,8 +13,8 @@ builder.Services.AddDbContext<UserAdminDbContext>(
     x => x.UseSqlite(databaseConfig["ConnectionString"])
 );
 
-//Add services
-builder.Services.AddScoped<UserAdminService>();
+//Add services 
+builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 
 //Add validators
 builder.Services.AddValidatorsFromAssemblyContaining<UserCreateParamsValidator>();

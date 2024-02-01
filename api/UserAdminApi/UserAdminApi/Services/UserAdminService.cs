@@ -7,13 +7,21 @@ public record UserDto(Guid Id, string Name, string Email, Int64 Credits);
 
 public record UserCreateParams(string Name, string Email, Int64 Credits);
 
+public interface IUserAdminService
+{
+    Task<UserDto> CreateUserAsync(UserCreateParams user);
+    Task<UserDto[]> GetAllUsersAsync();
+    Task<UserDto> UpdateUserAsync(Guid id, UserCreateParams user);
+    Task DeleteUserAsync(Guid id);
+}
+
 public class UserNotFoundException : Exception
 {
     public UserNotFoundException(Guid id)
         : base($"User with id {id} not found") { }
 }
 
-public class UserAdminService
+public class UserAdminService : IUserAdminService
 {
     private readonly UserAdminDbContext _dbContext;
 
