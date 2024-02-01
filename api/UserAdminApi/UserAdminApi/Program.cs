@@ -1,4 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using UserAdminApi.DbModel;
+
 var builder = WebApplication.CreateBuilder(args);
+//Add configuration
+var databaseConfig = builder.Configuration.GetSection("Database");
+
+//Add database
+builder.Services.AddDbContext<UserAdminDbContext>(
+    x => x.UseSqlite(databaseConfig["ConnectionString"])
+);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -34,4 +44,4 @@ app.MapGet("/users", () =>
 
 app.Run();
 
-internal record User(string Name, string Email, Int64 Credits);
+internal record UserDto(string Name, string Email, Int64 Credits);
