@@ -21,7 +21,7 @@
 # System files
 .DS_Store
 Thumbs.db
-*.db
+#*.db
 *.db-shm
 *.db-wal
 test.session.sql
