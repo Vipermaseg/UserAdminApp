@@ -1,0 +1,16 @@
+<mat-sidenav-container class="flex justify-between flex-col min-h-screen">
+  <div class="flex justify-between flex-col min-h-screen">
+    <mat-toolbar color="primary" class="mat-elevation-z6 justify-between md:!h-20">
+      <a [routerLink]="['./home']">User Admin</a>
+    </mat-toolbar>
+    <mat-progress-bar *ngIf="loadingRoute()" mode="query" color="accent"/>
+
+    <div class="grow flex items-center justify-center p-3 mat-elevation-z3">
+      <router-outlet/>
+    </div>
+
+    <mat-toolbar color="primary" role="footer" class="mat-elevation-z1 h-12 flex justify-between">
+
+    </mat-toolbar>
+  </div>
+</mat-sidenav-container>
