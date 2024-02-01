@@ -5,10 +5,12 @@ namespace UserAdminApi.DbModel;
 
 public class UserAdminDbContext : DbContext
 {
+    public UserAdminDbContext() { }
+
     public UserAdminDbContext(DbContextOptions<UserAdminDbContext> options)
         : base(options) { }
 
-    public DbSet<User> Users { get; set; }
+    public virtual DbSet<User> Users { get; set; }
 }
 
 public class User
