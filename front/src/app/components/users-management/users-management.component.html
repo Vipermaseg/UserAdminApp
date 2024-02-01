@@ -40,12 +40,27 @@
           </mat-error>
         </mat-form-field>
       </div>
-      <div class="mb-4">
+      <div *ngIf="!isEditMode()" class="mb-4">
         <button mat-raised-button color="primary" class="py-2 px-4">Añadir</button>
+      </div>
+      <div *ngIf="isEditMode()" class="mb-4">
+        <button mat-raised-button color="accent" class="py-2 px-4">Edit</button>
       </div>
     </form>
     <mat-divider />
     <mat-table [dataSource]="dataSource" matSort>
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-icon>edit</mat-icon>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="this.turnOffandTurnOn(row)"
+            [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
 
       <!-- Name Column -->
       <ng-container matColumnDef="name">
@@ -65,17 +80,10 @@
         <mat-cell class="hidden md:flex" *matCellDef="let user">{{ user.credits }}</mat-cell>
       </ng-container>
 
-      <!-- Id Column -->
-      <ng-container matColumnDef="id">
-        <mat-header-cell class="hidden md:flex" *matHeaderCellDef mat-sort-header>Id</mat-header-cell>
-        <mat-cell class="hidden md:flex" *matCellDef="let user">{{ user.id }}</mat-cell>
-      </ng-container>
-
       <ng-container matColumnDef="delete">
         <mat-header-cell *matHeaderCellDef></mat-header-cell>
         <mat-cell *matCellDef="let user">
-          <button mat-mini-fab color="warn" (click)="onDelete(user)" [disabled]="isLoading"
-            aria-label="Eliminar">
+          <button mat-mini-fab color="warn" (click)="onDelete(user)" [disabled]="isLoading" aria-label="Eliminar">
             <mat-icon>delete</mat-icon>
           </button>
         </mat-cell>

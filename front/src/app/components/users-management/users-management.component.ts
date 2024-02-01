@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -17,6 +17,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { ResultModalComponent } from '../result-modal/result-modal.component';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-users-management',
@@ -45,10 +46,12 @@ export class UsersManagementComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   addUserForm!: FormGroup;
-  displayedColumns: string[] = ['name', 'email', 'credits', 'delete'];
+  displayedColumns: string[] = ['select', 'name', 'email', 'credits', 'delete'];
   dataSource: MatTableDataSource<UserDto> = new MatTableDataSource();
+  selection = new SelectionModel<UserDto>(false, []);
 
   isLoading: boolean = false;
+  readonly isEditMode = signal(false);
 
   constructor(
     private fb: FormBuilder,
@@ -107,8 +110,35 @@ export class UsersManagementComponent implements OnInit {
     }
   }
 
+  public turnOffandTurnOn(row: any): void {
+    this.selection.toggle(row);
+    this.setEditMode(this.selection.selected.length > 0);
+    if (this.selection.selected.length > 0) {
+      this.addUserForm.patchValue({
+        id: this.selection.selected[0].id,
+        name: this.selection.selected[0].name,
+        email: this.selection.selected[0].email,
+        credits: this.selection.selected[0].credits
+      });
+    }
+  }
+
+  public setEditMode(b: boolean): void {
+    this.isEditMode.set(b);
+    this.addUserForm.get('email')?.clearValidators();
+    if (b) {
+      this.addUserForm.get('email')?.setValidators([Validators.email, Validators.required, Validators.maxLength(200)]);
+    } else {
+      this.addUserForm.get('email')?.setValidators([Validators.email, Validators.required, Validators.maxLength(200), this.emailAlreadyExistsValidator.bind(this)]);
+    }
+    this.addUserForm.get('email')?.updateValueAndValidity();
+  }
+
+
+
   createForm(): void {
     this.addUserForm = this.fb.group({
+      id: [''],
       email: ['', [Validators.email, Validators.required, Validators.maxLength(200), this.emailAlreadyExistsValidator.bind(this)]],
       name: ['', [Validators.required, Validators.maxLength(200)]],
       credits: [0, [Validators.required]],
@@ -121,27 +151,52 @@ export class UsersManagementComponent implements OnInit {
     }
     // Open the modal with the spinner.
     const dialogRef = this.dialog.open(ResultModalComponent, {
-      data: { icon: 'autorenew', message: `Inviting user...`, closeButtonText: '', onClose: () => { }, loading: true }
+      data: { icon: 'autorenew', message: this.isEditMode() ? `Editing user...` : `Inviting user...`, closeButtonText: '', onClose: () => { }, loading: true }
     });
 
-    this.usersAdminService.createUser({
-      name: this.addUserForm.value.name,
-      email: this.addUserForm.value.email,
-      credits: this.addUserForm.value.credits}).subscribe({
-      next: () => {
-        this.fetchData();
-        dialogRef.close();
-        this.cd.markForCheck();
-      },
-      error: (error) => {
-        this.fetchData();
-        dialogRef.close();
-        this.cd.markForCheck();
-        this.snackBar.open(`Error inviting user.`, `Close`, {
-          duration: 5000,
-        });
-      }
-    });
+    if (this.isEditMode()) {
+      this.usersAdminService.updateUser(
+        this.addUserForm.get('id')?.value,{
+        name: this.addUserForm.value.name,
+        email: this.addUserForm.value.email,
+        credits: this.addUserForm.value.credits}).subscribe({
+        next: () => {
+          this.fetchData();
+          this.setEditMode(false);
+          this.addUserForm.reset();
+          dialogRef.close();
+          this.cd.markForCheck();
+        },
+        error: (error) => {
+          this.fetchData();
+          dialogRef.close();
+          this.cd.markForCheck();
+          this.snackBar.open(`Error editing user.`, `Close`, {
+            duration: 5000,
+          });
+        }
+      });
+    } else {
+      this.usersAdminService.createUser({
+        name: this.addUserForm.value.name,
+        email: this.addUserForm.value.email,
+        credits: this.addUserForm.value.credits}).subscribe({
+        next: () => {
+          this.fetchData();
+          this.addUserForm.reset();
+          dialogRef.close();
+          this.cd.markForCheck();
+        },
+        error: (error) => {
+          this.fetchData();
+          dialogRef.close();
+          this.cd.markForCheck();
+          this.snackBar.open(`Error inviting user.`, `Close`, {
+            duration: 5000,
+          });
+        }
+      });
+    }
   }
 
   private emailAlreadyExistsValidator(control: FormControl): { [key: string]: any } | null {
