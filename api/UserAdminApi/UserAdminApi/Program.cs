@@ -17,7 +17,6 @@ builder.Services.AddDbContext<UserAdminDbContext>(
 builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 
 //Add validators
-builder.Services.AddValidatorsFromAssemblyContaining<UserDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<UserCreateParamsValidator>();
 
 // Add services to the container.
@@ -35,39 +34,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
-/*app.MapGet("/users", () =>
-{
-    return Enumerable.Range(1, 5).Select(index =>
-        new UserDto
-        (
-            Id: Guid.NewGuid(),
-            Name: $"User {index}",
-            Email: $"",
-            Credits: 0
-        )
-    ).ToArray();
-})
-.WithName("GetAllUsers")
-.WithSummary("Gets all users")
-.WithOpenApi();
-
-app.MapPost("/users", async (UserCreateParams userParams, IUserAdminService service) =>
-{
-    var user = new User
-    {
-        Id = Guid.NewGuid(),
-        Name = userParams.Name,
-        Email = userParams.Email,
-        Credits = userParams.Credits
-    };
-    return await service.CreateUserAsync(user);
-})
-.AddEndpointFilter<ValidationFilter<UserCreateParams>>()
-.WithName("AddUser")
-.WithSummary("Create user")
-.WithOpenApi();*/
 
 app.MapUserAdminEndpoints();
 
