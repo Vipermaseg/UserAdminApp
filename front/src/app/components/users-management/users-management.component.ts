@@ -45,7 +45,7 @@ export class UsersManagementComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort!: MatSort;
 
   addUserForm!: FormGroup;
-  displayedColumns: string[] = ['name', 'email', 'credits'];
+  displayedColumns: string[] = ['name', 'email', 'credits', 'delete'];
   dataSource: MatTableDataSource<UserDto> = new MatTableDataSource();
 
   isLoading: boolean = false;

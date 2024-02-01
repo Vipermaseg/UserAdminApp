@@ -37,13 +37,13 @@ public static class UserAdminEndpoints
         return TypedResults.Ok(users);
     }
 
-    private static async Task<CreatedAtRoute<UserDto>> CreateUser(
+    private static async Task<Ok<UserDto>> CreateUser(
         IUserAdminService userAdminService,
         UserCreateParams userCreateParams
     )
     {
         var newUser = await userAdminService.CreateUserAsync(userCreateParams);
-        return TypedResults.CreatedAtRoute<UserDto>(newUser, $"/users/{newUser.Id}");
+        return TypedResults.Ok(newUser);
     }
 
     private static async Task<Results<Ok<UserDto>, NotFound<string>>> UpdateUser(
