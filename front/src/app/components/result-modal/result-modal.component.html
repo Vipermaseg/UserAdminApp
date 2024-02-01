@@ -1,0 +1,19 @@
+<div class="grid place-items-center p-3">
+  <ng-container *ngIf="data.loading">
+    <mat-spinner></mat-spinner>
+  </ng-container>
+  <ng-container *ngIf="!data.loading">
+    <mat-icon *ngIf="!data.isError" color="primary" class="icon-display">{{ data.icon }}</mat-icon>
+    <mat-icon *ngIf="data.isError" color="warn" class="icon-display">{{ data.icon }}</mat-icon>
+    <h1 mat-dialog-title *ngIf="data.title" class="text-center">{{ data.title }}</h1>
+    <h2 mat-dialog-title *ngIf="data.subtitle" class="text-center">{{ data.subtitle }}</h2>
+    <mat-dialog-content *ngIf="data.description" class="text-center">{{ data.description }}</mat-dialog-content>
+    <mat-form-field *ngIf="data.textbox" class="w-full" appearance="outline">
+      <mat-label>{{ data.textbox.label }}</mat-label>
+      <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" matInput
+        readonly>{{ data.textbox.text }}</textarea>
+    </mat-form-field>
+    <mat-dialog-content class="whitespace-pre" *ngIf="data.postdata">{{ data.postdata }}</mat-dialog-content>
+    <button mat-raised-button color="primary" (click)="onClose()" class="self-center">{{ data.closeButtonText }}</button>
+  </ng-container>
+</div>
