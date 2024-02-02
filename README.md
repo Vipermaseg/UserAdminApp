@@ -1,4 +1,4 @@
-# .NET, Angular 17 Example SPA Project with minimal APIs
+# .NET 8, Angular 17 Example SPA Project with minimal APIs
 
 ## Overview
 
@@ -20,7 +20,7 @@ This project is an example of a full-stack application developed using .NET 8 wi
 
 ## Technologies Used
 
-- .NET 6.0
+- .NET 8
 - EF Core
 - SQLite
 - Minimal APIs
